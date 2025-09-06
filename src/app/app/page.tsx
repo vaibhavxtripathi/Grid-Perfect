@@ -129,7 +129,7 @@ export default function AppPage() {
               href="/landing"
               className="text-2xl font-bold text-gray-900 dark:text-white"
             >
-              Grid Slicer
+              Grid Perfect
             </Link>
             <Link
               href="/landing"

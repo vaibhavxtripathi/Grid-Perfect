@@ -52,7 +52,11 @@ export async function POST(request: NextRequest) {
 
         // Add each slice to the ZIP
         slices.forEach((slice: any, index: number) => {
-          const filename = `post_${String(slice.order).padStart(2, "0")}.jpg`;
+          const extension = slice.format === "png" ? "png" : "jpg";
+          const filename = `post_${String(slice.order).padStart(
+            2,
+            "0"
+          )}.${extension}`;
           archive.append(slice.buffer, { name: filename });
         });
 

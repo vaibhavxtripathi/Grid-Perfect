@@ -38,11 +38,11 @@ This app uses a precise algorithm with Instagram's exact constants to ensure per
 ## Features
 
 - **Drag & Drop Upload**: Easy image upload with validation
-- **Auto-Detection**: Automatically detects optimal grid dimensions
+- **Smart Auto-Detection**: Intelligently detects grid dimensions with tolerance for small variations
 - **Manual Override**: Adjust columns/rows manually if needed
 - **Preview Grid**: See exactly how your mural will look
 - **Posting Order**: Clear numbering for correct posting sequence
-- **High-Res Export**: Optional 2x scaling for better quality
+- **High Quality Export**: Maximum JPEG quality (100%) for crisp results
 - **ZIP Download**: All slices packaged for easy download
 
 ## Tech Stack

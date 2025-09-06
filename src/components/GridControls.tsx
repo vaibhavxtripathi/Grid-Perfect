@@ -9,7 +9,6 @@ interface GridControlsProps {
   exportScale: number;
   onColumnsChange: (columns: number) => void;
   onRowsChange: (rows: number) => void;
-  onExportScaleChange: (scale: number) => void;
   onProcess: () => void;
   isProcessing: boolean;
 }
@@ -21,7 +20,6 @@ export default function GridControls({
   exportScale,
   onColumnsChange,
   onRowsChange,
-  onExportScaleChange,
   onProcess,
   isProcessing,
 }: GridControlsProps) {
@@ -88,21 +86,14 @@ export default function GridControls({
           </div>
         </div>
 
-        {/* Export Scale */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Export Quality
-          </label>
-          <select
-            value={exportScale}
-            onChange={(e) => onExportScaleChange(parseInt(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-          >
-            <option value={1}>Standard (1080×1350)</option>
-            <option value={2}>High Resolution (2160×2700)</option>
-          </select>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            High resolution doubles all dimensions for better quality
+        {/* Export Info */}
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+            Export Settings
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Images will be exported at original quality (1080×1350) preserving
+            the original format (PNG/JPEG) with maximum quality settings.
           </p>
         </div>
 

@@ -14,6 +14,7 @@ export interface SliceResult {
   order: number;
   row: number;
   col: number;
+  format: string;
 }
 
 export interface ProcessingOptions {
@@ -38,8 +39,20 @@ export function detectMuralDimensions(
   height: number
 ): MuralDimensions {
   // Calculate how many 1080x1350 posts fit in the image
-  const columns = Math.round(width / POST_W);
-  const rows = Math.round(height / POST_H);
+  // Use more precise detection with tolerance for small variations
+  const columnsFloat = width / POST_W;
+  const rowsFloat = height / POST_H;
+
+  // Allow for small variations (within 5% tolerance)
+  const columns =
+    Math.abs(columnsFloat - Math.round(columnsFloat)) < 0.05
+      ? Math.round(columnsFloat)
+      : Math.floor(columnsFloat);
+
+  const rows =
+    Math.abs(rowsFloat - Math.round(rowsFloat)) < 0.05
+      ? Math.round(rowsFloat)
+      : Math.floor(rowsFloat);
 
   return {
     width,
@@ -82,16 +95,32 @@ export async function normalizeMural(
   const scaledHeight = Math.round(metadata.height * scale);
 
   // Resize and then center-crop to exact target dimensions
-  return image
-    .resize(scaledWidth, scaledHeight, { fit: "fill" })
-    .extract({
-      left: Math.max(0, Math.round((scaledWidth - targetWidth) / 2)),
-      top: Math.max(0, Math.round((scaledHeight - targetHeight) / 2)),
-      width: targetWidth,
-      height: targetHeight,
-    })
-    .jpeg({ quality: 95 })
-    .toBuffer();
+  // Preserve original format for better quality
+  const originalFormat = metadata.format;
+
+  if (originalFormat === "png") {
+    return image
+      .resize(scaledWidth, scaledHeight, { fit: "fill" })
+      .extract({
+        left: Math.max(0, Math.round((scaledWidth - targetWidth) / 2)),
+        top: Math.max(0, Math.round((scaledHeight - targetHeight) / 2)),
+        width: targetWidth,
+        height: targetHeight,
+      })
+      .png({ compressionLevel: 0, quality: 100 })
+      .toBuffer();
+  } else {
+    return image
+      .resize(scaledWidth, scaledHeight, { fit: "fill" })
+      .extract({
+        left: Math.max(0, Math.round((scaledWidth - targetWidth) / 2)),
+        top: Math.max(0, Math.round((scaledHeight - targetHeight) / 2)),
+        width: targetWidth,
+        height: targetHeight,
+      })
+      .jpeg({ quality: 100, mozjpeg: true })
+      .toBuffer();
+  }
 }
 
 /**
@@ -147,6 +176,10 @@ export async function sliceMural(
       const sliceLeft = backgroundLeft + scaledLeftPad;
       const sliceTop = backgroundTop;
 
+      // Get original image format and metadata
+      const originalMetadata = await sharp(muralBuffer).metadata();
+      const originalFormat = originalMetadata.format;
+
       // Create the 1080×1350 background
       const background = await sharp(muralBuffer)
         .extract({
@@ -169,22 +202,40 @@ export async function sliceMural(
 
       // Step 3: Place the 1015×1350 slice centered on the 1080×1350 background
       // The slice is centered with 32px left padding
-      const finalImage = await sharp(background)
-        .composite([
-          {
-            input: slice,
-            left: scaledLeftPad,
-            top: 0,
-          },
-        ])
-        .jpeg({ quality: 95 })
-        .toBuffer();
+      let finalImage: Buffer;
+
+      if (originalFormat === "png") {
+        // Use PNG for lossless compression
+        finalImage = await sharp(background)
+          .composite([
+            {
+              input: slice,
+              left: scaledLeftPad,
+              top: 0,
+            },
+          ])
+          .png({ compressionLevel: 0, quality: 100 })
+          .toBuffer();
+      } else {
+        // Use JPEG with maximum quality for other formats
+        finalImage = await sharp(background)
+          .composite([
+            {
+              input: slice,
+              left: scaledLeftPad,
+              top: 0,
+            },
+          ])
+          .jpeg({ quality: 100, mozjpeg: true })
+          .toBuffer();
+      }
 
       results.push({
         buffer: finalImage,
         order,
         row,
         col,
+        format: originalFormat || "jpeg",
       });
 
       order++;
@@ -205,7 +256,7 @@ export async function generateThumbnails(
     slices.map(async (slice) => {
       const thumbnailBuffer = await sharp(slice.buffer)
         .resize(thumbnailSize, thumbnailSize, { fit: "cover" })
-        .jpeg({ quality: 80 })
+        .jpeg({ quality: 95, mozjpeg: true })
         .toBuffer();
 
       return {

@@ -30,7 +30,7 @@ export default function DownloadButton({
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Format: JPEG
+                Format: Original (PNG/JPEG)
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Size: 1080×1350px
@@ -70,7 +70,7 @@ export default function DownloadButton({
         </button>
 
         <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-          Files will be named: post_01.jpg, post_02.jpg, etc.
+          Files will be named: post_01.png/jpg, post_02.png/jpg, etc.
         </div>
       </div>
     </div>

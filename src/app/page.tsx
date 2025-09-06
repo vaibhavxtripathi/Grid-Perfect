@@ -23,7 +23,7 @@ export default function Home() {
   const [dimensions, setDimensions] = useState<MuralDimensions | null>(null);
   const [columns, setColumns] = useState<number>(1);
   const [rows, setRows] = useState<number>(1);
-  const [exportScale, setExportScale] = useState<number>(1);
+  const exportScale = 1; // Always use standard scale for maximum compatibility
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -134,7 +134,6 @@ export default function Home() {
                 exportScale={exportScale}
                 onColumnsChange={setColumns}
                 onRowsChange={setRows}
-                onExportScaleChange={setExportScale}
                 onProcess={handleProcess}
                 isProcessing={isProcessing}
               />

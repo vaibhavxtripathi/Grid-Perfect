@@ -99,13 +99,14 @@ export async function normalizeMural(
  * This is the heart of the Instagram grid consistency solution
  * 
  * The algorithm ensures perfect alignment by:
- * 1. Calculating the center position for each tile
- * 2. Extracting a 1015×1350 slice centered at that position
- * 3. Extracting a 1080×1350 background centered at that position
- * 4. Placing the slice on the background with 32px left padding
+ * 1. Calculating background shift for left (-64px) and right (+64px) tiles
+ * 2. Extracting the full 1080×1350 background for each tile with shift applied
+ * 3. Extracting the 1015×1350 slice positioned at (backgroundLeft + 32px)
+ * 4. Placing the slice on top of the background with 32px left padding
  * 
  * This ensures that when Instagram shrinks the 1080×1350 post to 1015×1350
- * in the grid, it shows exactly the right portion of the mural.
+ * in the grid, it shows exactly the right portion of the mural with proper
+ * edge alignment for left and right tiles.
  */
 export async function sliceMural(
   muralBuffer: Buffer,
@@ -127,28 +128,25 @@ export async function sliceMural(
 
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < columns; col++) {
-      // Step 1: Calculate the center position for this tile
-      // Each tile should be centered at col * POST_W + POST_W/2
-      const centerX = col * scaledPostW + scaledPostW / 2;
-      const centerY = row * scaledPostH + scaledPostH / 2;
+      // Step 1: Calculate background shift for left and right tiles
+      let backgroundShift = 0;
+      if (col === 0) {
+        // Left tile: shift background 64px left to show more left content
+        backgroundShift = -64 * exportScale;
+      } else if (col === columns - 1) {
+        // Right tile: shift background 64px right to show more right content
+        backgroundShift = 64 * exportScale;
+      }
+      // Center tiles: no shift
 
-      // Step 2: Extract the grid slice (1015×1350) centered at this position
-      const sliceLeft = Math.round(centerX - scaledGridW / 2);
-      const sliceTop = Math.round(centerY - scaledGridH / 2);
+      // Step 2: Extract the full 1080×1350 background for this tile with shift
+      const backgroundLeft = col * scaledPostW + backgroundShift;
+      const backgroundTop = row * scaledPostH;
 
-      // Step 3: Extract the background (1080×1350) centered at this position
-      const backgroundLeft = Math.round(centerX - scaledPostW / 2);
-      const backgroundTop = Math.round(centerY - scaledPostH / 2);
-
-      // Create the slice (1015×1350 section from the mural)
-      const slice = await sharp(muralBuffer)
-        .extract({
-          left: sliceLeft,
-          top: sliceTop,
-          width: scaledGridW,
-          height: scaledGridH,
-        })
-        .toBuffer();
+      // Step 3: Extract the 1015×1350 slice that should be centered in this background
+      // The slice should be positioned to show the right portion of the mural
+      const sliceLeft = backgroundLeft + scaledLeftPad;
+      const sliceTop = backgroundTop;
 
       // Create the background (1080×1350 section from the mural)
       const background = await sharp(muralBuffer)
@@ -160,8 +158,18 @@ export async function sliceMural(
         })
         .toBuffer();
 
-      // Step 4: Place the 1015×1350 slice centered onto the 1080×1350 background
-      // Left offset = LEFT_PAD (32px)
+      // Create the slice (1015×1350 section from the mural)
+      const slice = await sharp(muralBuffer)
+        .extract({
+          left: sliceLeft,
+          top: sliceTop,
+          width: scaledGridW,
+          height: scaledGridH,
+        })
+        .toBuffer();
+
+      // Step 3: Place the 1015×1350 slice centered onto the 1080×1350 background
+      // The slice goes on top with 32px left padding
       const finalImage = await sharp(background)
         .composite([
           {

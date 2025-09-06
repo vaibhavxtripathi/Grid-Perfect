@@ -26,9 +26,9 @@ This app uses a precise algorithm with Instagram's exact constants to ensure per
 
 ### Algorithm
 
-1. Calculate the center position for each tile in the mural
-2. Extract a 1015×1350 slice centered at that position (grid dimensions)
-3. Extract a 1080×1350 background centered at that position
+1. Calculate background shift for left (-64px) and right (+64px) tiles
+2. Extract the full 1080×1350 background for each tile with shift applied
+3. Extract the 1015×1350 slice positioned at (backgroundLeft + 32px)
 4. Place the 1015×1350 slice onto the 1080×1350 background (32px left offset)
 5. Export as 1080×1350 JPEG files
 6. Output in left→right, top→bottom posting order
@@ -102,20 +102,23 @@ The core algorithm ensures perfect Instagram grid consistency:
 
 ```typescript
 // For each tile (row, col):
-const centerX = col * POST_W + POST_W / 2;  // Center position
-const centerY = row * POST_H + POST_H / 2;
+// Extract the full 1080×1350 background for this tile
+const backgroundLeft = col * POST_W;
+const backgroundTop = row * POST_H;
+const background = extract(
+  mural,
+  backgroundLeft,
+  backgroundTop,
+  POST_W,
+  POST_H
+);
 
-// Extract 1015×1350 slice centered at this position
-const sliceLeft = centerX - GRID_W / 2;
-const sliceTop = centerY - GRID_H / 2;
+// Extract the 1015×1350 slice positioned at (backgroundLeft + 32px)
+const sliceLeft = backgroundLeft + LEFT_PAD;
+const sliceTop = backgroundTop;
 const slice = extract(mural, sliceLeft, sliceTop, GRID_W, GRID_H);
 
-// Extract 1080×1350 background centered at this position
-const backgroundLeft = centerX - POST_W / 2;
-const backgroundTop = centerY - POST_H / 2;
-const background = extract(mural, backgroundLeft, backgroundTop, POST_W, POST_H);
-
-// Center slice on background (32px left offset)
+// Place slice on background (32px left offset)
 const final = composite(background, slice, LEFT_PAD, 0);
 ```
 

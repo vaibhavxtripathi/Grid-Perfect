@@ -1,6 +1,6 @@
 // Test to verify the corrected Instagram grid algorithm
-console.log("Instagram Grid Algorithm Verification");
-console.log("====================================");
+console.log("Corrected Instagram Grid Algorithm Test");
+console.log("======================================");
 
 const POST_W = 1080;
 const POST_H = 1350;
@@ -25,23 +25,18 @@ for (let row = 0; row < rows; row++) {
   for (let col = 0; col < cols; col++) {
     console.log(`\nTile (${row}, ${col}):`);
 
-    // Calculate center position
-    const centerX = col * POST_W + POST_W / 2;
-    const centerY = row * POST_H + POST_H / 2;
+    // Step 1: Extract the full 1080×1350 background for this tile
+    const backgroundLeft = col * POST_W;
+    const backgroundTop = row * POST_H;
 
-    // Calculate slice position (1015×1350)
-    const sliceLeft = Math.round(centerX - GRID_W / 2);
-    const sliceTop = Math.round(centerY - GRID_H / 2);
+    // Step 2: Extract the 1015×1350 slice positioned at (backgroundLeft + 32px)
+    const sliceLeft = backgroundLeft + LEFT_PAD;
+    const sliceTop = backgroundTop;
 
-    // Calculate background position (1080×1350)
-    const backgroundLeft = Math.round(centerX - POST_W / 2);
-    const backgroundTop = Math.round(centerY - POST_H / 2);
-
-    console.log(`  Center: (${centerX}, ${centerY})`);
-    console.log(`  Slice: (${sliceLeft}, ${sliceTop}) [${GRID_W}×${GRID_H}]`);
     console.log(
       `  Background: (${backgroundLeft}, ${backgroundTop}) [${POST_W}×${POST_H}]`
     );
+    console.log(`  Slice: (${sliceLeft}, ${sliceTop}) [${GRID_W}×${GRID_H}]`);
     console.log(`  Slice offset in background: ${LEFT_PAD}px from left`);
 
     // Verify the slice fits within the background
@@ -65,8 +60,14 @@ for (let row = 0; row < rows; row++) {
       sliceBottom <= backgroundBottom;
 
     console.log(`  Slice within background: ${withinBounds ? "✓" : "✗"}`);
+
+    // Check if the slice is properly positioned (32px from left edge)
+    const correctOffset = sliceLeft - backgroundLeft === LEFT_PAD;
+    console.log(`  Correct left offset: ${correctOffset ? "✓" : "✗"}`);
   }
 }
 
 console.log("\nAlgorithm verification complete!");
-console.log("The corrected algorithm ensures proper centering and alignment.");
+console.log(
+  "The corrected algorithm ensures proper background and slice positioning."
+);

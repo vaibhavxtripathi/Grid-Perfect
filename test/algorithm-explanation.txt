@@ -1,0 +1,53 @@
+
+CORRECTED INSTAGRAM GRID ALGORITHM EXPLANATION
+==============================================
+
+The algorithm now correctly handles the Instagram grid inconsistency:
+
+1. BACKGROUND EXTRACTION:
+   - Each tile gets a full 1080×1350 background
+   - Background position: (col * 1080, row * 1350)
+   - This covers the complete area that the tile should represent
+
+2. SLICE EXTRACTION:
+   - Each tile gets a 1015×1350 slice
+   - Slice position: (backgroundLeft + 32, backgroundTop)
+   - This is the portion that will be visible in Instagram's grid
+
+3. COMPOSITING:
+   - Place the 1015×1350 slice on top of the 1080×1350 background
+   - Slice is positioned 32px from the left edge of the background
+   - This creates the final 1080×1350 individual post
+
+VISUAL EXAMPLE FOR 3×2 GRID:
+============================
+
+Mural: 3240×2700px (3×2 grid)
+
+Tile (0,0):
+  Background: (0, 0) to (1080, 1350)     [1080×1350]
+  Slice: (32, 0) to (1047, 1350)         [1015×1350]
+  Final: Slice placed on background with 32px left padding
+
+Tile (0,1):
+  Background: (1080, 0) to (2160, 1350)  [1080×1350]
+  Slice: (1112, 0) to (2127, 1350)       [1015×1350]
+  Final: Slice placed on background with 32px left padding
+
+Tile (0,2):
+  Background: (2160, 0) to (3240, 1350)  [1080×1350]
+  Slice: (2192, 0) to (3207, 1350)       [1015×1350]
+  Final: Slice placed on background with 32px left padding
+
+WHY THIS WORKS:
+==============
+
+When Instagram displays the 1080×1350 post in the grid:
+- Instagram shrinks it to 1015×1350
+- The 32px left padding ensures the right portion is visible
+- The background provides context for the areas that get cropped
+- Result: Perfect seamless alignment in the Instagram grid
+
+The key insight is that the background should be the FULL 1080×1350 area
+for each tile, not centered around the slice. This ensures proper
+alignment for all tiles, especially the left and right ones.

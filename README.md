@@ -26,12 +26,14 @@ This app uses a precise algorithm with Instagram's exact constants to ensure per
 
 ### Algorithm
 
-1. Calculate background shift for left (-64px) and right (+64px) tiles
-2. Extract the full 1080×1350 background for each tile with shift applied
-3. Extract the 1015×1350 slice positioned at (backgroundLeft + 32px)
-4. Place the 1015×1350 slice onto the 1080×1350 background (32px left offset)
-5. Export as 1080×1350 JPEG files
-6. Output in left→right, top→bottom posting order
+1. Create 1015×1350 slice (centered on each tile)
+2. Create 1080×1350 background from specific mural regions:
+   - First post: slice from 64px to 1144px
+   - Second post: slice from 1080px to 2160px
+   - Third post: slice from 2096px to 3176px
+3. Place the 1015×1350 slice centered on the 1080×1350 background
+4. Export as 1080×1350 JPEG files
+5. Output in left→right, top→bottom posting order
 
 ## Features
 
@@ -102,21 +104,20 @@ The core algorithm ensures perfect Instagram grid consistency:
 
 ```typescript
 // For each tile (row, col):
-// Extract the full 1080×1350 background for this tile
-const backgroundLeft = col * POST_W;
-const backgroundTop = row * POST_H;
-const background = extract(
-  mural,
-  backgroundLeft,
-  backgroundTop,
-  POST_W,
-  POST_H
-);
+// Create the 1080×1350 background from specific mural regions
+let backgroundLeft;
+if (col === 0) {
+  backgroundLeft = 64; // First post: 64px to 1144px
+} else if (col === 1) {
+  backgroundLeft = 1080; // Second post: 1080px to 2160px
+} else {
+  backgroundLeft = 2096; // Third post: 2096px to 3176px
+}
+const background = extract(mural, backgroundLeft, row * POST_H, POST_W, POST_H);
 
-// Extract the 1015×1350 slice positioned at (backgroundLeft + 32px)
-const sliceLeft = backgroundLeft + LEFT_PAD;
-const sliceTop = backgroundTop;
-const slice = extract(mural, sliceLeft, sliceTop, GRID_W, GRID_H);
+// Create the 1015×1350 slice (centered on the tile)
+const sliceLeft = col * POST_W + LEFT_PAD;
+const slice = extract(mural, sliceLeft, row * POST_H, GRID_W, GRID_H);
 
 // Place slice on background (32px left offset)
 const final = composite(background, slice, LEFT_PAD, 0);

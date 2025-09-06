@@ -6,8 +6,10 @@ The algorithm now correctly handles the Instagram grid inconsistency:
 
 1. BACKGROUND EXTRACTION:
    - Each tile gets a full 1080×1350 background
-   - Background position: (col * 1080, row * 1350)
-   - This covers the complete area that the tile should represent
+   - Background position: (col * 1080 + shift, row * 1350)
+   - Left tiles: shift = -64px (shows more left content)
+   - Right tiles: shift = +64px (shows more right content)
+   - Center tiles: shift = 0px (no shift)
 
 2. SLICE EXTRACTION:
    - Each tile gets a 1015×1350 slice
@@ -24,19 +26,19 @@ VISUAL EXAMPLE FOR 3×2 GRID:
 
 Mural: 3240×2700px (3×2 grid)
 
-Tile (0,0):
-  Background: (0, 0) to (1080, 1350)     [1080×1350]
-  Slice: (32, 0) to (1047, 1350)         [1015×1350]
+Tile (0,0) - LEFT TILE:
+  Background: (-64, 0) to (1016, 1350)   [1080×1350] (shifted left 64px)
+  Slice: (-32, 0) to (983, 1350)         [1015×1350]
   Final: Slice placed on background with 32px left padding
 
-Tile (0,1):
-  Background: (1080, 0) to (2160, 1350)  [1080×1350]
+Tile (0,1) - CENTER TILE:
+  Background: (1080, 0) to (2160, 1350)  [1080×1350] (no shift)
   Slice: (1112, 0) to (2127, 1350)       [1015×1350]
   Final: Slice placed on background with 32px left padding
 
-Tile (0,2):
-  Background: (2160, 0) to (3240, 1350)  [1080×1350]
-  Slice: (2192, 0) to (3207, 1350)       [1015×1350]
+Tile (0,2) - RIGHT TILE:
+  Background: (2224, 0) to (3304, 1350)  [1080×1350] (shifted right 64px)
+  Slice: (2256, 0) to (3271, 1350)       [1015×1350]
   Final: Slice placed on background with 32px left padding
 
 WHY THIS WORKS:
@@ -48,6 +50,8 @@ When Instagram displays the 1080×1350 post in the grid:
 - The background provides context for the areas that get cropped
 - Result: Perfect seamless alignment in the Instagram grid
 
-The key insight is that the background should be the FULL 1080×1350 area
-for each tile, not centered around the slice. This ensures proper
-alignment for all tiles, especially the left and right ones.
+The key insights are:
+1. The background should be the FULL 1080×1350 area for each tile
+2. Left tiles need their background shifted left to show more left content
+3. Right tiles need their background shifted right to show more right content
+4. This ensures proper alignment and better edge coverage for all tiles

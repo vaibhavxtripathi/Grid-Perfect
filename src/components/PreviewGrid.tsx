@@ -24,8 +24,12 @@ export default function PreviewGrid({
   const sortedThumbnails = [...thumbnails].sort((a, b) => a.order - b.order);
 
   const handleIndividualDownload = async (order: number) => {
-    if (!sessionId) return;
+    if (!sessionId) {
+      console.error("No sessionId provided");
+      return;
+    }
 
+    console.log("Starting download for order:", order, "sessionId:", sessionId);
     setDownloadingOrders((prev) => new Set(prev).add(order));
 
     try {
@@ -37,24 +41,35 @@ export default function PreviewGrid({
         body: JSON.stringify({ sessionId, order }),
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
       if (!response.ok) {
-        throw new Error("Download failed");
+        const errorText = await response.text();
+        console.error("Response error:", errorText);
+        throw new Error(`Download failed: ${response.status} ${errorText}`);
       }
 
       const blob = await response.blob();
+      console.log("Blob received:", blob.size, "bytes, type:", blob.type);
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `post_${String(order).padStart(2, "0")}.${
         blob.type.includes("png") ? "png" : "jpg"
       }`;
+      console.log("Download filename:", a.download);
+
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      console.log("Download initiated successfully");
     } catch (error) {
       console.error("Individual download error:", error);
-      alert("Failed to download individual post");
+      alert(`Failed to download individual post: ${error.message}`);
     } finally {
       setDownloadingOrders((prev) => {
         const newSet = new Set(prev);

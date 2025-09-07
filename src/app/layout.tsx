@@ -4,7 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "Instagram Smart Grid Slicer",
+  title: "Grid Perfect",
   description:
     "Upload a large mural image and automatically slice it into perfectly aligned Instagram posts",
 };

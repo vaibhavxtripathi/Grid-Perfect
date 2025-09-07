@@ -21,7 +21,7 @@ export default function Navbar() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div
-          className={`mx-auto px-4 sm:px-6 lg:px-8 fixed top-0 z-50 backdrop-blur-sm w-full ${
+          className={`mx-auto px-4 sm:px-6 lg:px-8 fixed top-0 z-50 backdrop-blur-md saturate-100 w-full ${
             scrolled ? "border-b border-gray-300 shadow-sm" : ""
           }`}
         >

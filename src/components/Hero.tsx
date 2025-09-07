@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <div className="max-w-7xl mx-auto text-center">
-      <h1 className="text-5xl md:text-6xl font-bold text-black mb-6">
+      <h1 className="text-7xl md:text-8xl font-semibold text-black mb-6">
         Create Perfect Instagram Grids with AI
       </h1>
       <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
@@ -13,7 +13,7 @@ export default function Hero() {
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
           href="/app"
-          className="bg-black text-white px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
+          className="bg-black text-white px-3 py-1 rounded-lg text-base font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
         >
           Get Started
           <div className="rotate-0 group-hover:-rotate-45 transition-transform duration-300">

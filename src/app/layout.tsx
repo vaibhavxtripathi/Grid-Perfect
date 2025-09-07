@@ -5,9 +5,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Grid Perfect - Perfect Instagram Grid Murals",
+  title: "Instagram Smart Grid Slicer",
   description:
-    "Create perfect Instagram grid murals with our smart slicing algorithm. Upload one image and get perfectly aligned posts that look seamless in your Instagram grid.",
+    "Upload a large mural image and automatically slice it into perfectly aligned Instagram posts",
 };
 
 export default function RootLayout({
@@ -17,7 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

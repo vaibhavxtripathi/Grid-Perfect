@@ -1,6 +1,6 @@
 export default function BentoIndividualPost() {
   return (
-    <div className="group bg-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out">
+    <div className="group bg-white rounded-3xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
           <svg

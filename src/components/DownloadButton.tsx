@@ -12,29 +12,23 @@ export default function DownloadButton({
   totalSlices,
 }: DownloadButtonProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-        Download Slices
-      </h2>
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 h-full flex flex-col">
+      <h2 className="text-xl font-semibold text-black mb-4">Download Slices</h2>
 
-      <div className="space-y-4">
-        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <div className="space-y-4 flex-1 flex flex-col justify-between">
+        <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">
-                Ready to Download
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="font-medium text-black">Ready to Download</p>
+              <p className="text-sm text-gray-600">
                 {totalSlices} Instagram posts ready
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500">
                 Format: Original (PNG/JPEG)
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Size: 1080×1350px
-              </p>
+              <p className="text-sm text-gray-500">Size: 1080×1350px</p>
             </div>
           </div>
         </div>
@@ -69,7 +63,7 @@ export default function DownloadButton({
           )}
         </button>
 
-        <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+        <div className="text-xs text-gray-500 text-center">
           Files will be named: post_01.png/jpg, post_02.png/jpg, etc.
         </div>
       </div>

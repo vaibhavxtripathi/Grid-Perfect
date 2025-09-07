@@ -79,14 +79,16 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 h-full flex flex-col">
       <h2 className="text-xl font-semibold text-black mb-4">
         Upload Mural Image
       </h2>
 
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          isDragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+          isDragOver
+            ? "border-blue-500 bg-blue-50"
+            : "border-gray-300 hover:border-gray-400"
         }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -104,9 +106,7 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
         {isUploading ? (
           <div className="flex flex-col items-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-            <p className="text-gray-600">
-              Processing image...
-            </p>
+            <p className="text-gray-600">Processing image...</p>
           </div>
         ) : (
           <div className="flex flex-col items-center">
@@ -126,9 +126,7 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
             <p className="text-lg font-medium text-black mb-2">
               Drop your mural image here
             </p>
-            <p className="text-gray-500 mb-4">
-              or click to browse files
-            </p>
+            <p className="text-gray-500 mb-4">or click to browse files</p>
             <p className="text-sm text-gray-400">
               Supports JPEG, PNG, WebP up to 10MB
             </p>

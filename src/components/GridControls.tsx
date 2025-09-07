@@ -1,6 +1,6 @@
 "use client";
 
-import { MuralDimensions } from "@/app/page";
+import type { MuralDimensions } from "@/app/app/page";
 
 interface GridControlsProps {
   dimensions: MuralDimensions;
@@ -24,30 +24,21 @@ export default function GridControls({
   isProcessing,
 }: GridControlsProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-black mb-4">
-        Grid Settings
-      </h2>
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 h-full flex flex-col">
+      <h2 className="text-xl font-semibold text-black mb-4">Grid Settings</h2>
 
-      <div className="space-y-6">
-        {/* Image Info */}
+      <div className="space-y-6 flex-1">
         <div className="bg-gray-50 rounded-lg p-4">
-          <h3 className="font-medium text-black mb-2">
-            Image Information
-          </h3>
+          <h3 className="font-medium text-black mb-2">Image Information</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-500">
-                Dimensions:
-              </span>
+              <span className="text-gray-500">Dimensions:</span>
               <span className="ml-2 font-mono text-black">
                 {dimensions.width} × {dimensions.height}
               </span>
             </div>
             <div>
-              <span className="text-gray-500">
-                Detected Grid:
-              </span>
+              <span className="text-gray-500">Detected Grid:</span>
               <span className="ml-2 font-mono text-black">
                 {dimensions.columns} × {dimensions.rows}
               </span>
@@ -67,7 +58,7 @@ export default function GridControls({
               max="10"
               value={columns}
               onChange={(e) => onColumnsChange(parseInt(e.target.value) || 1)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full text-black px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
@@ -81,16 +72,14 @@ export default function GridControls({
               max="10"
               value={rows}
               onChange={(e) => onRowsChange(parseInt(e.target.value) || 1)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full text-black px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
 
         {/* Export Info */}
         <div className="bg-gray-50 rounded-lg p-4">
-          <h3 className="font-medium text-black mb-2">
-            Export Settings
-          </h3>
+          <h3 className="font-medium text-black mb-2">Export Settings</h3>
           <p className="text-sm text-gray-600">
             Images will be exported at original quality (1080×1350) preserving
             the original format (PNG/JPEG) with maximum quality settings.

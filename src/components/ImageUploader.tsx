@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { MuralDimensions } from "@/app/page";
+import { MuralDimensions } from "@/app/app/page";
 
 interface ImageUploaderProps {
   onFileUpload: (file: File, dimensions: MuralDimensions) => void;

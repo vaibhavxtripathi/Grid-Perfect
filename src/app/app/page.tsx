@@ -192,6 +192,7 @@ export default function AppPage() {
                 thumbnails={thumbnails}
                 columns={columns}
                 rows={rows}
+                sessionId={sessionId}
               />
             ) : (
               <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
@@ -239,102 +240,96 @@ export default function AppPage() {
           </AnimatePresence>
         </div>
 
-        {/* Desktop Split Layout */}
-        <div className="hidden lg:flex gap-8">
-          {/* Left panel: fixed width, sticky */}
-          <div className="w-[380px] xl:w-[420px] flex-col sticky top-[96px] self-start space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ImageUploader onFileUpload={handleFileUpload} />
-            </motion.div>
-            <AnimatePresence mode="wait">
-              {uploadedFile && dimensions ? (
+        {/* Desktop Layout */}
+        <div className="hidden lg:block">
+          {!uploadedFile ? (
+            /* Centered Upload - No Image Uploaded */
+            <div className="flex justify-center">
+              <div className="w-[420px]">
                 <motion.div
-                  key="controls"
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 12 }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <GridControls
-                    dimensions={dimensions}
-                    columns={columns}
-                    rows={rows}
-                    exportScale={exportScale}
-                    onColumnsChange={setColumns}
-                    onRowsChange={setRows}
-                    onProcess={handleProcess}
-                    isProcessing={isProcessing}
-                  />
+                  <ImageUploader onFileUpload={handleFileUpload} />
                 </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </div>
-
-          {/* Right panel: fluid, scrollable */}
-          <div className="flex-1 min-w-0">
-            <div className="space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35 }}
-              >
-                {thumbnails.length > 0 ? (
-                  <PreviewGrid
-                    thumbnails={thumbnails}
-                    columns={columns}
-                    rows={rows}
-                  />
-                ) : (
-                  <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
-                    <div className="text-gray-400 mb-4">
-                      <svg
-                        className="w-16 h-16 mx-auto"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-black mb-2">
-                      Preview Grid
-                    </h3>
-                    <p className="text-gray-500">
-                      Upload an image and process it to see the preview grid
-                      here.
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-
-              <AnimatePresence mode="wait">
-                {thumbnails.length > 0 ? (
-                  <motion.div
-                    key="download"
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 14 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <DownloadButton
-                      onDownload={handleDownload}
-                      isDownloading={isDownloading}
-                      totalSlices={thumbnails.length}
-                    />
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Split Layout - Image Uploaded */
+            <div className="flex gap-8">
+              {/* Left panel: fixed width, sticky */}
+              <div className="w-[380px] xl:w-[420px] flex-col sticky top-[96px] self-start space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ImageUploader onFileUpload={handleFileUpload} />
+                </motion.div>
+                <AnimatePresence mode="wait">
+                  {uploadedFile && dimensions ? (
+                    <motion.div
+                      key="controls"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 12 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <GridControls
+                        dimensions={dimensions}
+                        columns={columns}
+                        rows={rows}
+                        exportScale={exportScale}
+                        onColumnsChange={setColumns}
+                        onRowsChange={setRows}
+                        onProcess={handleProcess}
+                        isProcessing={isProcessing}
+                      />
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
+
+              {/* Right panel: fluid, scrollable */}
+              <div className="flex-1 min-w-0">
+                <div className="space-y-8">
+                  {thumbnails.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35 }}
+                    >
+                      <PreviewGrid
+                        thumbnails={thumbnails}
+                        columns={columns}
+                        rows={rows}
+                        sessionId={sessionId}
+                      />
+                    </motion.div>
+                  )}
+
+                  <AnimatePresence mode="wait">
+                    {thumbnails.length > 0 ? (
+                      <motion.div
+                        key="download"
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 14 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <DownloadButton
+                          onDownload={handleDownload}
+                          isDownloading={isDownloading}
+                          totalSlices={thumbnails.length}
+                        />
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <SiteFooter />

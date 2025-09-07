@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "Instagram Smart Grid Slicer",
@@ -16,11 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-          {children}
-        </div>
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${GeistMono.variable} scroll-smooth`}
+    >
+      <body className={GeistSans.className}>
+        <div className="min-h-screen bg-white">{children}</div>
       </body>
     </html>
   );

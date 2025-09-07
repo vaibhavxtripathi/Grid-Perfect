@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,7 +20,12 @@ export default function Navbar() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <motion.header
+        className="bg-white border-b border-gray-200"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div
           className={`mx-auto px-4 sm:px-6 lg:px-8 fixed top-0 z-50 backdrop-blur-md saturate-100 w-full ${
             scrolled ? "border-b border-gray-300 shadow-sm" : ""
@@ -27,14 +33,24 @@ export default function Navbar() {
         >
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center">
+            <motion.div
+              className="flex items-center"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            >
               <Link href="/" className="text-2xl font-bold text-black">
                 Grid Perfect
               </Link>
-            </div>
+            </motion.div>
 
             {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
+            <motion.nav
+              className="hidden md:flex space-x-8"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            >
               <Link
                 href="/app"
                 className="text-gray-700 hover:text-black transition-colors"
@@ -53,10 +69,15 @@ export default function Navbar() {
               >
                 How it Works
               </Link>
-            </nav>
+            </motion.nav>
 
             {/* CTA Buttons */}
-            <div className="hidden md:flex items-center space-x-3">
+            <motion.div
+              className="hidden md:flex items-center space-x-3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            >
               <Link
                 href="/app"
                 className="bg-black text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 group"
@@ -78,10 +99,15 @@ export default function Navbar() {
                   </svg>
                 </div>
               </Link>
-            </div>
+            </motion.div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+            <motion.div
+              className="md:hidden"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            >
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="text-gray-700 hover:text-black"
@@ -100,7 +126,7 @@ export default function Navbar() {
                   />
                 </svg>
               </button>
-            </div>
+            </motion.div>
           </div>
         </div>
 
@@ -150,7 +176,7 @@ export default function Navbar() {
             </div>
           </div>
         )}
-      </header>
+      </motion.header>
     </>
   );
 }

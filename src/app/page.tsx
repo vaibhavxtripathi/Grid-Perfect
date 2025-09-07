@@ -9,6 +9,7 @@ import HowItWorks from "@/components/HowItWorks";
 import Benefits from "@/components/Benefits";
 import CallToAction from "@/components/CallToAction";
 import SiteFooter from "@/components/SiteFooter";
+import { motion } from "framer-motion";
 
 export default function LandingPage() {
   return (
@@ -16,8 +17,13 @@ export default function LandingPage() {
       <Navbar />
       <section className="py-44 px-4 sm:px-6 lg:px-8">
         <Hero />
-        <div className="max-w-7xl mx-auto mt-20 relative">
-          {/* Card */}
+        <motion.div
+          className="max-w-7xl mx-auto mt-20 relative"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-100px" }}
+        >
           <div className="rounded-3xl border border-gray-200 bg-[#F7F7F7] p-5 shadow-sm relative z-10">
             <BentoGrid />
           </div>
@@ -27,7 +33,7 @@ export default function LandingPage() {
                   bg-gradient-to-b from-transparent to-white 
                   pointer-events-none z-20"
           ></div>
-        </div>
+        </motion.div>
       </section>
       <TrustedBy />
       <FeatureSection />

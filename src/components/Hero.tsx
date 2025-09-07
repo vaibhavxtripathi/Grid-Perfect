@@ -1,16 +1,32 @@
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Hero() {
   return (
     <div className="max-w-7xl mx-auto text-center">
-      <h1 className="text-7xl md:text-8xl font-semibold text-black mb-6">
+      <motion.h1
+        className="text-7xl md:text-8xl font-semibold text-black mb-6"
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
         Create Perfect Instagram Grids with AI
-      </h1>
-      <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+      </motion.h1>
+      <motion.p
+        className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+      >
         Upload your mural and let Grid Perfect slice it into perfectly aligned
         Instagram posts that look seamless in both grid and individual views.
-      </p>
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      </motion.p>
+      <motion.div
+        className="flex flex-col sm:flex-row gap-3 justify-center"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+      >
         <Link
           href="/app"
           className="bg-black text-white px-3 py-1 rounded-lg text-base font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
@@ -38,7 +54,7 @@ export default function Hero() {
         >
           Learn More
         </Link>
-      </div>
+      </motion.div>
     </div>
   );
 }

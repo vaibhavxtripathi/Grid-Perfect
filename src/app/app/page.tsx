@@ -24,7 +24,7 @@ export default function AppPage() {
   const [dimensions, setDimensions] = useState<MuralDimensions | null>(null);
   const [columns, setColumns] = useState<number>(1);
   const [rows, setRows] = useState<number>(1);
-  const exportScale = 1; // Always use standard scale for maximum compatibility
+  const exportScale = 1; 
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -110,7 +110,6 @@ export default function AppPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -143,7 +142,6 @@ export default function AppPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Controls */}
           <div className="space-y-6">
             <ImageUploader onFileUpload={handleFileUpload} />
 
@@ -207,6 +205,7 @@ export default function AppPage() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }

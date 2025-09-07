@@ -50,10 +50,12 @@ export default function SiteFooter() {
               </div>
               <div className="flex flex-col space-y-2">
                 <Link
-                  href="#"
+                  href="https://buymeacoffee.com/vxtr"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-600 hover:text-black transition-colors text-sm"
                 >
-                  Privacy Policy
+                  Buy me a coffee
                 </Link>
                 <Link
                   href="#"
@@ -73,7 +75,9 @@ export default function SiteFooter() {
             {/* Social Media Icons */}
             <div className="flex space-x-4">
               <Link
-                href="#"
+                href="https://x.com/vxtrtwt"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-600 hover:text-black transition-colors"
               >
                 <svg
@@ -85,7 +89,9 @@ export default function SiteFooter() {
                 </svg>
               </Link>
               <Link
-                href="#"
+                href="https://www.linkedin.com/in/vaibhavxtripathi/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-600 hover:text-black transition-colors"
               >
                 <svg
@@ -97,7 +103,9 @@ export default function SiteFooter() {
                 </svg>
               </Link>
               <Link
-                href="#"
+                href="https://github.com/vaibhavxtripathi"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-600 hover:text-black transition-colors"
               >
                 <svg

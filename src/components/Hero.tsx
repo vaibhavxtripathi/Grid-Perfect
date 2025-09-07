@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 
 export default function Hero() {
   return (
-    <div className="max-w-7xl mx-auto text-center">
+    <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
       <motion.h1
-        className="text-7xl md:text-8xl font-semibold text-black mb-6"
+        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-semibold text-black mb-4 sm:mb-6 leading-tight"
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -13,7 +13,7 @@ export default function Hero() {
         Create Perfect Instagram Grids with AI
       </motion.h1>
       <motion.p
-        className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
+        className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-2"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -22,19 +22,19 @@ export default function Hero() {
         Instagram posts that look seamless in both grid and individual views.
       </motion.p>
       <motion.div
-        className="flex flex-col sm:flex-row gap-3 justify-center"
+        className="flex sm:flex-row gap-3 sm:gap-4 justify-center items-center"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
       >
         <Link
           href="/app"
-          className="bg-black text-white px-3 py-1 rounded-lg text-base font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
+          className="w-full sm:w-auto bg-black text-white lg:px-5 py-3 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-base font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
         >
           Get Started
           <div className="rotate-0 group-hover:-rotate-45 transition-transform duration-300">
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -50,7 +50,7 @@ export default function Hero() {
         </Link>
         <Link
           href="#how-it-works"
-          className="bg-white text-black border border-gray-300 px-6 py-3 rounded-lg text-base font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+          className="w-full sm:w-auto bg-white text-black border border-gray-300 px-6 py-3 sm:px-8 sm:py-3 rounded-lg text-sm sm:text-base font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
         >
           Learn More
         </Link>

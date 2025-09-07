@@ -82,7 +82,7 @@ export default function Navbar() {
                 href="/app"
                 className="bg-black text-white px-3 py-3 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 group"
               >
-                Get Started
+                Try It Out
                 <div className="rotate-0 group-hover:-rotate-45 transition-transform duration-300">
                   <svg
                     className="w-4 h-4"

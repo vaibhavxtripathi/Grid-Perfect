@@ -140,7 +140,7 @@ export default function AppPage() {
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-black mb-4">
-            Grid Perfect - Instagram Slicer
+            Grid Perfect
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Upload a large mural image and automatically slice it into perfectly

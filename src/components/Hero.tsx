@@ -4,6 +4,14 @@ import { motion } from "framer-motion";
 export default function Hero() {
   return (
     <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="w-fit text-black lg:text-sm font-medium justify-center items-center flex rounded-full bg-gray-100 p-4 mx-auto mb-8 -mt-8 px-4 py-1.5 border text-xs"
+      >
+        Hassle free solution to create grids {">"}
+      </motion.div>
       <motion.h1
         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-semibold text-black mb-4 sm:mb-6 leading-tight"
         initial={{ opacity: 0, y: 60 }}

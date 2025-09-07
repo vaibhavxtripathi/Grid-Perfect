@@ -1,6 +1,6 @@
 export default function BentoLargeGrid() {
   return (
-    <div className="group bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out">
+    <div className="group bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out h-full flex flex-col">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
           <svg
@@ -26,7 +26,7 @@ export default function BentoLargeGrid() {
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 flex-grow">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}

@@ -1,6 +1,6 @@
 export default function BentoDownload() {
   return (
-    <div className="group bg-white rounded-3xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out">
+    <div className="group bg-white rounded-3xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out h-full flex flex-col">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
           <svg
@@ -21,7 +21,7 @@ export default function BentoDownload() {
           Download
         </h3>
       </div>
-      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 group-hover:bg-gray-100 group-hover:border-gray-300 transition-all duration-200">
+      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 group-hover:bg-gray-100 group-hover:border-gray-300 transition-all duration-200 flex-grow flex items-center justify-center">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <svg

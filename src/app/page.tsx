@@ -20,9 +20,8 @@ export default function LandingPage() {
         <motion.div
           className="max-w-7xl mx-auto mt-20 relative"
           initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          viewport={{ once: true, margin: "-100px" }}
         >
           <div className="rounded-3xl border border-gray-200 bg-[#F7F7F7] p-5 shadow-sm relative z-10">
             <BentoGrid />

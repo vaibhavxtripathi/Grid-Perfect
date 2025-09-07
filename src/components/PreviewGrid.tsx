@@ -1,6 +1,6 @@
 "use client";
 
-import { Thumbnail } from "@/app/page";
+import { Thumbnail } from "@/app/app/page";
 import { useState } from "react";
 
 interface PreviewGridProps {
@@ -69,7 +69,9 @@ export default function PreviewGrid({
       console.log("Download initiated successfully");
     } catch (error) {
       console.error("Individual download error:", error);
-      alert(`Failed to download individual post: ${error.message}`);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      alert(`Failed to download individual post: ${errorMessage}`);
     } finally {
       setDownloadingOrders((prev) => {
         const newSet = new Set(prev);

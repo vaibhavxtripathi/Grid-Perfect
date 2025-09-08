@@ -16,94 +16,30 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
     async (file: File) => {
       setIsUploading(true);
       try {
-        // Read image dimensions in the browser
-        const arrayBuffer = await file.arrayBuffer();
-        const blobUrl = URL.createObjectURL(
-          new Blob([arrayBuffer], { type: file.type })
-        );
-        const img = new Image();
-        const loadPromise = new Promise<HTMLImageElement>((resolve, reject) => {
-          img.onload = () => resolve(img);
-          img.onerror = () => reject(new Error("Failed to load image"));
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
         });
-        img.src = blobUrl;
-        await loadPromise;
 
-        const originalWidth = img.naturalWidth;
-        const originalHeight = img.naturalHeight;
-
-        // Detect columns/rows like server: width/1080, height/1350 with 5% tolerance
-        const POST_W = 1080;
-        const POST_H = 1350;
-        const columnsFloat = originalWidth / POST_W;
-        const rowsFloat = originalHeight / POST_H;
-        const withinTolerance = (value: number) =>
-          Math.abs(value - Math.round(value)) < 0.05;
-        const columns = Math.max(
-          1,
-          withinTolerance(columnsFloat)
-            ? Math.round(columnsFloat)
-            : Math.floor(columnsFloat)
-        );
-        const rows = Math.max(
-          1,
-          withinTolerance(rowsFloat)
-            ? Math.round(rowsFloat)
-            : Math.floor(rowsFloat)
-        );
-
-        const targetWidth = POST_W * columns;
-        const targetHeight = POST_H * rows;
-
-        // If image is larger than target, resize client-side to reduce upload size
-        let fileToUpload = file;
-        if (originalWidth !== targetWidth || originalHeight !== targetHeight) {
-          const canvas = document.createElement("canvas");
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) throw new Error("Canvas not supported");
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            originalWidth,
-            originalHeight,
-            0,
-            0,
-            targetWidth,
-            targetHeight
-          );
-
-          // Preserve format: png stays png (lossless), jpeg/webp at quality 1.0
-          const mimeType =
-            file.type && /image\/(png|jpeg|jpg|webp)/.test(file.type)
-              ? file.type === "image/jpg"
-                ? "image/jpeg"
-                : file.type
-              : "image/jpeg";
-
-          const blob: Blob = await new Promise((resolve) =>
-            canvas.toBlob((b) => resolve(b as Blob), mimeType, 1.0)
-          );
-
-          fileToUpload = new File([blob], file.name, { type: mimeType });
+        let result: any;
+        try {
+          result = await response.json();
+        } catch (e) {
+          const text = await response.text().catch(() => "");
+          throw new Error(text || "Unexpected server response");
         }
 
-        URL.revokeObjectURL(blobUrl);
-
-        const dimensions: MuralDimensions = {
-          width: targetWidth,
-          height: targetHeight,
-          columns,
-          rows,
-        };
-
-        // Bypass server upload step; pass file+dimensions forward for processing
-        onFileUpload(fileToUpload, dimensions);
+        if (result.success) {
+          onFileUpload(file, result.dimensions);
+        } else {
+          alert("Error uploading file: " + result.error);
+        }
       } catch (error) {
         console.error("Upload error:", error);
-        alert("Failed to prepare image: " + (error as Error).message);
+        alert("Failed to upload file");
       } finally {
         setIsUploading(false);
       }
@@ -198,7 +134,7 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
             </p>
             <p className="text-gray-500 mb-4">or click to browse files</p>
             <p className="text-sm text-gray-400">
-              Supports JPEG, PNG, WebP up to 10MB
+              Supports JPEG, PNG, WebP up to 5MB
             </p>
           </div>
         )}

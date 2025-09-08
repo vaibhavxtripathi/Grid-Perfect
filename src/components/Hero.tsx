@@ -10,7 +10,7 @@ export default function Hero() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-fit text-black lg:text-sm font-medium justify-center items-center flex rounded-full bg-gray-100 p-4 mx-auto mb-8 -mt-8 px-4 py-1.5 border text-xs"
       >
-        Hassle free solution to create grids {">"}
+        Hassle free solution to slice grids {">"}
       </motion.div>
       <motion.h1
         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-semibold text-black mb-4 sm:mb-6 leading-tight"

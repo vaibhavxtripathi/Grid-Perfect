@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { detectMuralDimensions, validateImage } from "@/lib/slicer";
 import sharp from "sharp";
 import cloudinary from "@/lib/cloudinary";
+import "server-only";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

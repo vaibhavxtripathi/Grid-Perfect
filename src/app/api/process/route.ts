@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { normalizeMural, sliceMural, generateThumbnails } from "@/lib/slicer";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,12 +60,11 @@ export async function POST(request: NextRequest) {
         exportScale,
       },
     });
-  } catch (error) {
-    console.error("Processing error:", error);
-    return NextResponse.json(
-      { error: "Failed to process image" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    const message =
+      (error && (error.message || String(error))) || "Failed to process image";
+    console.error("Processing error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

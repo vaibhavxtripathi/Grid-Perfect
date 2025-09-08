@@ -4,6 +4,7 @@ import sharp from "sharp";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,11 +43,10 @@ export async function POST(request: NextRequest) {
       filename: file.name,
       fileSize: file.size,
     });
-  } catch (error) {
-    console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Failed to process upload" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    const message =
+      (error && (error.message || String(error))) || "Failed to process upload";
+    console.error("Upload error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

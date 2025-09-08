@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build"
+
+[secrets]
+  scan = { enabled = true, omit_paths = [".next/"] }
+
+

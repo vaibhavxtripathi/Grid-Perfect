@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import archiver from "archiver";
 
+export const runtime = "nodejs";
+
 export async function POST(request: NextRequest) {
   try {
     const { sessionId } = await request.json();

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { detectMuralDimensions, validateImage } from "@/lib/slicer";
+import sharp from "sharp";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +24,6 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Get image metadata to detect dimensions
-    const sharp = require("sharp");
     const metadata = await sharp(buffer).metadata();
 
     if (!metadata.width || !metadata.height) {

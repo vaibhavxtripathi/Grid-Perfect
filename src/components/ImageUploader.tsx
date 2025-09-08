@@ -24,7 +24,13 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
           body: formData,
         });
 
-        const result = await response.json();
+        let result: any;
+        try {
+          result = await response.json();
+        } catch (e) {
+          const text = await response.text().catch(() => "");
+          throw new Error(text || "Unexpected server response");
+        }
 
         if (result.success) {
           onFileUpload(file, result.dimensions);

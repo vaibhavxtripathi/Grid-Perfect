@@ -7,14 +7,30 @@ export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
-    const columns = parseInt(formData.get("columns") as string);
-    const rows = parseInt(formData.get("rows") as string);
-    const exportScale = parseInt(formData.get("exportScale") as string) || 1;
+    const contentType = request.headers.get("content-type") || "";
+    let file: File | null = null;
+    let imageUrl: string | null = null;
+    let columns: number;
+    let rows: number;
+    let exportScale: number = 1;
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      imageUrl = body.url;
+      columns = parseInt(String(body.columns));
+      rows = parseInt(String(body.rows));
+      exportScale = parseInt(String(body.exportScale || 1)) || 1;
+    } else {
+      const formData = await request.formData();
+      file = formData.get("file") as File;
+      imageUrl = (formData.get("url") as string) || null;
+      columns = parseInt(formData.get("columns") as string);
+      rows = parseInt(formData.get("rows") as string);
+      exportScale = parseInt(formData.get("exportScale") as string) || 1;
+    }
+
+    if (!file && !imageUrl) {
+      return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
     if (!columns || !rows || columns < 1 || rows < 1) {
@@ -24,8 +40,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    // Load image bytes from file or URL
+    let buffer: Buffer;
+    if (imageUrl) {
+      const res = await fetch(imageUrl);
+      if (!res.ok) throw new Error("Failed to fetch image from URL");
+      buffer = Buffer.from(await res.arrayBuffer());
+    } else if (file) {
+      buffer = Buffer.from(await file.arrayBuffer());
+    } else {
+      throw new Error("No image source available");
+    }
 
     // Normalize the mural to exact size needed
     const normalizedBuffer = await normalizeMural(buffer, columns, rows);

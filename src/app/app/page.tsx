@@ -31,15 +31,17 @@ export default function AppPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   const handleFileUpload = useCallback(
-    (file: File, detectedDimensions: MuralDimensions) => {
+    (file: File, detectedDimensions: MuralDimensions, url?: string) => {
       setUploadedFile(file);
       setDimensions(detectedDimensions);
       setColumns(detectedDimensions.columns);
       setRows(detectedDimensions.rows);
       setThumbnails([]);
       setSessionId(null);
+      setUploadedUrl(url || null);
     },
     []
   );
@@ -49,15 +51,28 @@ export default function AppPage() {
 
     setIsProcessing(true);
     try {
-      const formData = new FormData();
-      formData.append("file", uploadedFile);
-      formData.append("columns", columns.toString());
-      formData.append("rows", rows.toString());
-      formData.append("exportScale", exportScale.toString());
+      const payload = uploadedUrl
+        ? {
+            url: uploadedUrl,
+            columns,
+            rows,
+            exportScale,
+          }
+        : null;
 
       const response = await fetch("/api/process", {
         method: "POST",
-        body: formData,
+        headers: payload ? { "Content-Type": "application/json" } : undefined,
+        body: payload
+          ? JSON.stringify(payload)
+          : (() => {
+              const fd = new FormData();
+              fd.append("file", uploadedFile);
+              fd.append("columns", columns.toString());
+              fd.append("rows", rows.toString());
+              fd.append("exportScale", exportScale.toString());
+              return fd;
+            })(),
       });
 
       const result = await response.json();
@@ -139,9 +154,7 @@ export default function AppPage() {
 
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-black mb-4">
-            Grid Perfect
-          </h1>
+          <h1 className="text-4xl font-bold text-black mb-4">Grid Perfect</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Upload a large mural image and automatically slice it into perfectly
             aligned Instagram posts that look seamless both in the grid preview

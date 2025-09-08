@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { MuralDimensions } from "@/app/app/page";
 
 interface ImageUploaderProps {
-  onFileUpload: (file: File, dimensions: MuralDimensions) => void;
+  onFileUpload: (file: File, dimensions: MuralDimensions, url?: string) => void;
 }
 
 export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
@@ -33,13 +33,13 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
         }
 
         if (result.success) {
-          onFileUpload(file, result.dimensions);
+          onFileUpload(file, result.dimensions, result.url);
         } else {
-          alert("Error uploading file: " + result.error);
+          alert("Error uploading image: " + result.error);
         }
       } catch (error) {
         console.error("Upload error:", error);
-        alert("Failed to upload file");
+        alert("Image size exceeds 5MB");
       } finally {
         setIsUploading(false);
       }

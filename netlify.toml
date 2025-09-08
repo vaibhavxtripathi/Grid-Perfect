@@ -2,6 +2,6 @@
   command = "npm run build"
 
 [secrets]
-  scan = { enabled = true, omit_paths = [".next/"] }
+  scan = { enabled = true, omit_paths = [".next/", ".netlify/"] }
 
 

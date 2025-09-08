@@ -25,7 +25,7 @@ export default function BentoIndividualPost() {
         {[1].map((i) => (
           <div
             key={i}
-            className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-gray-600 font-medium text-sm hover:bg-gray-200 hover:scale-105 transition-all duration-200 cursor-pointer"
+            className="w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 font-medium text-sm hover:bg-gray-200 hover:scale-105 transition-all duration-200 cursor-pointer"
           >
             {i}
           </div>

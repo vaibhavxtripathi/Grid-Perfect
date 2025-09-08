@@ -2,8 +2,8 @@ import BulletPoints from "./BulletPoints";
 
 export default function BentoDetection() {
   return (
-    <div className="group bg-white rounded-3xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out h-full flex flex-col">
-      <div className="flex items-center gap-3 mb-4">
+    <div className="group bg-white rounded-3xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300 ease-out h-fit flex flex-col">
+      <div className="flex items-center gap-3">
         <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
           <svg
             className="w-4 h-4 text-white"
@@ -23,12 +23,14 @@ export default function BentoDetection() {
           AI Processing
         </h3>
       </div>
-      <div className="flex-grow flex items-center justify-center">
+      <div className="-mt-4 flex items-center justify-center">
         <BulletPoints
           points={[
             "Analyzing dimensions",
             "Slicing image",
             "Optimizing quality",
+            "Posting order",
+
           ]}
         />
       </div>

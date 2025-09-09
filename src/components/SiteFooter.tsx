@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function SiteFooter() {
   return (
-    <footer className="bg-white border-t border-gray-200 h-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+    <footer className="bg-white border-t border-gray-200 py-8 h-fit">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
           {/* Left Section - Branding and Copyright */}
           <div className="mb-8 lg:mb-0">

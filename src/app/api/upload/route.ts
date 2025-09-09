@@ -23,44 +23,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    // Upload to Cloudinary first to remove hosting size limits
-    const uploadResult = await new Promise<{ secure_url: string }>(
-      (resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: "grid-perfect/uploads",
-            resource_type: "image",
-            overwrite: true,
-          },
-          (error, result) => {
-            if (error || !result)
-              return reject(error || new Error("Upload failed"));
-            resolve({ secure_url: (result as any).secure_url });
-          }
-        );
+    // Convert file to buffer for Cloudinary upload
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-        const reader = new ReadableStream({
-          start: async (controller) => {
-            const ab = await file.arrayBuffer();
-            controller.enqueue(new Uint8Array(ab));
-            controller.close();
-          },
-        });
-        // Pipe to cloudinary stream
-        const readerStream = (reader as any).getReader();
-        const pump = () =>
-          readerStream.read().then(({ done, value }: any) => {
-            if (done) return uploadStream.end();
-            uploadStream.write(Buffer.from(value));
-            return pump();
-          });
-        pump();
+    // Upload to Cloudinary using direct buffer upload
+    const uploadResult = await cloudinary.uploader.upload(
+      `data:${file.type};base64,${buffer.toString("base64")}`,
+      {
+        folder: "grid-perfect/uploads",
+        resource_type: "image",
+        overwrite: true,
       }
     );
 
-    // Fetch bytes back to read metadata locally for dimensions detection
-    const response = await fetch(uploadResult.secure_url);
-    const buffer = Buffer.from(await response.arrayBuffer());
+    // Use the buffer we already have for metadata detection
     const metadata = await sharp(buffer).metadata();
 
     if (!metadata.width || !metadata.height) {

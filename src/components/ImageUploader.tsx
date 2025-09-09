@@ -39,7 +39,10 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
         }
       } catch (error) {
         console.error("Upload error:", error);
-        alert("Image size exceeds 5MB");
+        alert(
+          "Failed to upload image: " +
+            (error instanceof Error ? error.message : "Unknown error")
+        );
       } finally {
         setIsUploading(false);
       }
@@ -134,7 +137,7 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
             </p>
             <p className="text-gray-500 mb-4">or click to browse files</p>
             <p className="text-sm text-gray-400">
-              Supports JPEG, PNG, WebP up to 5MB
+              Supports JPEG, PNG, WebP (no size limit)
             </p>
           </div>
         )}

@@ -19,7 +19,7 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} scroll-smooth`}
     >
-      <body className={GeistSans.className}>
+      <body className={GeistSans.className + "min-h-screen"}>
         <div className="min-h-screen bg-white">{children}</div>
       </body>
     </html>

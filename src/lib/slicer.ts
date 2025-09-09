@@ -284,13 +284,14 @@ export function validateImage(file: File): { valid: boolean; error?: string } {
     };
   }
 
-  const maxSize = 10 * 1024 * 1024; // 10MB
-  if (file.size > maxSize) {
-    return {
-      valid: false,
-      error: "Image size must be less than 10MB",
-    };
-  }
+  // Remove size limit since Cloudinary handles large files
+  // const maxSize = 10 * 1024 * 1024; // 10MB
+  // if (file.size > maxSize) {
+  //   return {
+  //     valid: false,
+  //     error: "Image size must be less than 10MB",
+  //   };
+  // }
 
   return { valid: true };
 }

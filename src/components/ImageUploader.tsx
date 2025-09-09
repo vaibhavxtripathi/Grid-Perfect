@@ -16,24 +16,53 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
     async (file: File) => {
       setIsUploading(true);
       try {
-        const formData = new FormData();
-        formData.append("file", file);
+        // 1) Get a signed upload payload from our server
+        const sigRes = await fetch(
+          `/api/cloudinary-signature?folder=${encodeURIComponent(
+            "grid-perfect/uploads"
+          )}`
+        );
+        const sig = await sigRes.json();
+        if (!sig.signature)
+          throw new Error("Failed to get Cloudinary signature");
 
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        // 2) Upload directly to Cloudinary from the browser
+        const upForm = new FormData();
+        upForm.append("file", file);
+        upForm.append("api_key", sig.apiKey);
+        upForm.append("timestamp", String(sig.timestamp));
+        upForm.append("signature", sig.signature);
+        upForm.append("folder", sig.folder);
 
-        let result: any;
-        try {
-          result = await response.json();
-        } catch (e) {
-          const text = await response.text().catch(() => "");
-          throw new Error(text || "Unexpected server response");
+        const cloudRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: upForm,
+          }
+        );
+        const cloudJson = await cloudRes.json();
+        if (!cloudRes.ok) {
+          throw new Error(
+            cloudJson?.error?.message || "Cloudinary upload failed"
+          );
         }
 
+        // 3) Ask our server to detect dimensions from the Cloudinary URL
+        const detectRes = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: cloudJson.secure_url,
+            type: cloudJson.resource_type,
+            format: cloudJson.format,
+            bytes: cloudJson.bytes,
+          }),
+        });
+        const result = await detectRes.json();
+
         if (result.success) {
-          onFileUpload(file, result.dimensions, result.url);
+          onFileUpload(file, result.dimensions, cloudJson.secure_url);
         } else {
           alert("Error uploading image: " + result.error);
         }

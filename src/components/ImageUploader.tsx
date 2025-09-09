@@ -166,7 +166,7 @@ export default function ImageUploader({ onFileUpload }: ImageUploaderProps) {
             </p>
             <p className="text-gray-500 mb-4">or click to browse files</p>
             <p className="text-sm text-gray-400">
-              Supports JPEG, PNG, WebP (no size limit)
+              Supports JPEG, PNG, WebP (Max Size 10MB)
             </p>
           </div>
         )}

@@ -25,8 +25,14 @@ export async function POST(request: NextRequest) {
 
     // Convert file to buffer for Cloudinary upload
     const buffer = Buffer.from(await file.arrayBuffer());
+    console.log("File info:", {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
 
     // Upload to Cloudinary using direct buffer upload
+    console.log("Starting Cloudinary upload...");
     const uploadResult = await cloudinary.uploader.upload(
       `data:${file.type};base64,${buffer.toString("base64")}`,
       {
@@ -35,6 +41,7 @@ export async function POST(request: NextRequest) {
         overwrite: true,
       }
     );
+    console.log("Cloudinary upload successful:", uploadResult.secure_url);
 
     // Use the buffer we already have for metadata detection
     const metadata = await sharp(buffer).metadata();
@@ -59,7 +66,14 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     const message =
       (error && (error.message || String(error))) || "Failed to process upload";
-    console.error("Upload error:", message);
+    console.error("Upload error details:", {
+      message,
+      stack: error?.stack,
+      name: error?.name,
+      code: error?.code,
+      status: error?.status,
+      http_code: error?.http_code,
+    });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

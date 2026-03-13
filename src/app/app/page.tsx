@@ -21,12 +21,15 @@ export interface Thumbnail {
   thumbnail: string;
 }
 
+type SliceMode = "modern-3x4" | "legacy-4x5";
+
 export default function AppPage() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [dimensions, setDimensions] = useState<MuralDimensions | null>(null);
   const [columns, setColumns] = useState<number>(1);
   const [rows, setRows] = useState<number>(1);
   const exportScale = 1;
+  const [mode, setMode] = useState<SliceMode>("modern-3x4");
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -57,6 +60,7 @@ export default function AppPage() {
             columns,
             rows,
             exportScale,
+            mode,
           }
         : null;
 
@@ -71,6 +75,7 @@ export default function AppPage() {
               fd.append("columns", columns.toString());
               fd.append("rows", rows.toString());
               fd.append("exportScale", exportScale.toString());
+              fd.append("mode", mode);
               return fd;
             })(),
       });
@@ -89,7 +94,7 @@ export default function AppPage() {
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedFile, columns, rows, exportScale]);
+  }, [uploadedFile, columns, rows, exportScale, mode, uploadedUrl]);
 
   const handleDownload = useCallback(async () => {
     if (!sessionId) return;
@@ -186,8 +191,10 @@ export default function AppPage() {
                   columns={columns}
                   rows={rows}
                   exportScale={exportScale}
+                mode={mode}
                   onColumnsChange={setColumns}
                   onRowsChange={setRows}
+                onModeChange={setMode}
                   onProcess={handleProcess}
                   isProcessing={isProcessing}
                 />
@@ -294,8 +301,10 @@ export default function AppPage() {
                         columns={columns}
                         rows={rows}
                         exportScale={exportScale}
+                        mode={mode}
                         onColumnsChange={setColumns}
                         onRowsChange={setRows}
+                        onModeChange={setMode}
                         onProcess={handleProcess}
                         isProcessing={isProcessing}
                       />

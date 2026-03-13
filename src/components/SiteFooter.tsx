@@ -9,7 +9,7 @@ export default function SiteFooter() {
           <div className="mb-8 lg:mb-0">
             <h2 className="text-2xl font-bold text-black mb-3">Grid Perfect</h2>
             <p className="text-gray-600 text-sm mb-2">
-              Copyright © 2024 Grid Perfect. All rights reserved.
+              Copyright © 2026 Grid Perfect. All rights reserved.
             </p>
             <p className="text-gray-600 text-sm">
               Made with ❤️ by{" "}

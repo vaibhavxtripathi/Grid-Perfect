@@ -1,13 +1,39 @@
 import sharp from "sharp";
 
-// Constants as specified in the requirements
+// Core Instagram post / grid constants (2026 update)
+// Instagram now uses a 3:4 portrait ratio for both feed posts
+// and the profile grid preview. We export 1080×1440px tiles so
+// each slice matches how it appears in the grid.
 export const POST_W = 1080;
-export const POST_H = 1350;
-export const GRID_W = 1015;
-export const GRID_H = 1350;
-export const PAD_TOTAL = POST_W - GRID_W; // 65
-export const LEFT_PAD = 32;
-export const RIGHT_PAD = 33;
+export const POST_H = 1440;
+
+// In the new 3:4 world the profile grid no longer crops a narrower
+// "safe" width – what you upload at 3:4 is what shows. We keep
+// GRID_* for compatibility but match them directly to the post size.
+export const GRID_W = POST_W;
+export const GRID_H = POST_H;
+
+// Legacy padding values are no longer needed for the modern 3:4 mode,
+// but we keep the exports (as zeros) to avoid breaking any external
+// imports that still reference them.
+export const PAD_TOTAL = 0;
+export const LEFT_PAD = 0;
+export const RIGHT_PAD = 0;
+
+// Supported slicing modes:
+// - "modern-3x4":  1080×1440 tiles, no additional safe-width tricks
+// - "legacy-4x5":  original 1080×1350 posts with 1015×1350 grid-safe center
+export type SliceMode = "modern-3x4" | "legacy-4x5";
+
+// Legacy 4:5 / safe-width constants are kept here so we can still
+// generate murals that behave exactly like the original app did.
+const LEGACY_POST_W = 1080;
+const LEGACY_POST_H = 1350;
+const LEGACY_GRID_W = 1015;
+const LEGACY_GRID_H = 1350;
+const LEGACY_LEFT_PAD = 32;
+const LEGACY_RIGHT_PAD = 33;
+const LEGACY_PAD_TOTAL = LEGACY_LEFT_PAD + LEGACY_RIGHT_PAD; // 65
 
 export interface SliceResult {
   buffer: Buffer;
@@ -21,6 +47,7 @@ export interface ProcessingOptions {
   exportScale?: number;
   columns?: number;
   rows?: number;
+  mode?: SliceMode;
 }
 
 export interface MuralDimensions {
@@ -38,7 +65,7 @@ export function detectMuralDimensions(
   width: number,
   height: number
 ): MuralDimensions {
-  // Calculate how many 1080x1350 posts fit in the image
+  // Calculate how many 1080x1440 (3:4) posts fit in the image
   // Use more precise detection with tolerance for small variations
   const columnsFloat = width / POST_W;
   const rowsFloat = height / POST_H;
@@ -63,16 +90,21 @@ export function detectMuralDimensions(
 }
 
 /**
- * Normalize mural to exact size needed for slicing
- * Resizes or center-crops the image to fit the grid perfectly
+ * Normalize mural to exact size needed for slicing.
+ * Resizes or center-crops the image to fit a perfect grid:
+ *
+ * - modern-3x4:  width = 1080 * columns, height = 1440 * rows
+ * - legacy-4x5:  width = 1080 * columns, height = 1350 * rows
  */
 export async function normalizeMural(
   imageBuffer: Buffer,
   targetColumns: number,
-  targetRows: number
+  targetRows: number,
+  mode: SliceMode = "modern-3x4"
 ): Promise<Buffer> {
   const targetWidth = POST_W * targetColumns;
-  const targetHeight = POST_H * targetRows;
+  const targetHeight =
+    (mode === "legacy-4x5" ? LEGACY_POST_H : POST_H) * targetRows;
 
   const image = sharp(imageBuffer);
   const metadata = await image.metadata();
@@ -124,18 +156,19 @@ export async function normalizeMural(
 }
 
 /**
- * Core slicing algorithm as specified in requirements
- * This is the heart of the Instagram grid consistency solution
+ * Core slicing algorithm
  *
- * The algorithm follows a simple 3-step process:
- * 1. Create 1015×1350 slice (centered on each tile)
- * 2. Create 1080×1350 background from specific mural regions:
- *    - First post: slice from 64px to 1144px
- *    - Second post: slice from 1080px to 2160px
- *    - Third post: slice from 2096px to 3176px
- * 3. Place the 1015×1350 slice centered on the 1080×1350 background
+ * - modern-3x4:
+ *   Slice the normalized mural into equal 1080×1440 (3:4) tiles.
+ *   Because the grid and feed share the same ratio, each tile
+ *   appears seamless in both views without hidden crops.
  *
- * This ensures perfect Instagram grid alignment with proper edge coverage.
+ * - legacy-4x5:
+ *   Use the original smart algorithm:
+ *   1) create a 1015×1350 slice centered on each tile
+ *   2) place it on a 1080×1350 background from precise mural
+ *      regions so the profile grid’s 1015×1350 safe area and
+ *      the full 1080×1350 post both look seamless.
  */
 export async function sliceMural(
   muralBuffer: Buffer,
@@ -143,102 +176,157 @@ export async function sliceMural(
   rows: number,
   options: ProcessingOptions = {}
 ): Promise<SliceResult[]> {
-  const { exportScale = 1 } = options;
-
-  // Scale constants if high-res export is requested
-  const scaledPostW = POST_W * exportScale;
-  const scaledPostH = POST_H * exportScale;
-  const scaledGridW = GRID_W * exportScale;
-  const scaledGridH = GRID_H * exportScale;
-  const scaledLeftPad = LEFT_PAD * exportScale;
+  const { exportScale = 1, mode = "modern-3x4" } = options;
 
   const results: SliceResult[] = [];
   let order = 1;
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < columns; col++) {
-      // Step 1: Create the 1080×1350 background based on column position
-      let backgroundLeft: number;
-      if (col === 0) {
-        // First post: slice from 64px to 1144px (1080px total)
-        backgroundLeft = 64 * exportScale;
-      } else if (col === 1) {
-        // Second (center) post: slice from 1080px to 2160px (1080px total)
-        backgroundLeft = 1080 * exportScale;
-      } else {
-        // Third post: slice from 2096px to 3176px (1080px total)
-        backgroundLeft = 2096 * exportScale;
-      }
-      const backgroundTop = row * scaledPostH;
+  // Read original metadata once for format detection
+  const originalMetadata = await sharp(muralBuffer).metadata();
+  const originalFormat = originalMetadata.format;
 
-      // Step 2: Create the 1015×1350 slice (centered on the tile)
-      // The slice should be positioned relative to the background, not the tile
-      const sliceLeft = backgroundLeft + scaledLeftPad;
-      const sliceTop = backgroundTop;
+  if (mode === "legacy-4x5") {
+    // Legacy smart algorithm: 4:5 posts with 1015×1350 grid-safe center
+    const scaledPostW = LEGACY_POST_W * exportScale;
+    const scaledPostH = LEGACY_POST_H * exportScale;
+    const scaledGridW = LEGACY_GRID_W * exportScale;
+    const scaledGridH = LEGACY_GRID_H * exportScale;
+    const scaledLeftPad = LEGACY_LEFT_PAD * exportScale;
 
-      // Get original image format and metadata
-      const originalMetadata = await sharp(muralBuffer).metadata();
-      const originalFormat = originalMetadata.format;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < columns; col++) {
+        // Step 1: Create the 1080×1350 background based on column position
+        let backgroundLeft: number;
+        if (col === 0) {
+          // First post: slice from 64px to 1144px (1080px total)
+          backgroundLeft = 64 * exportScale;
+        } else if (col === 1) {
+          // Second (center) post: slice from 1080px to 2160px (1080px total)
+          backgroundLeft = 1080 * exportScale;
+        } else {
+          // Third post: slice from 2096px to 3176px (1080px total)
+          backgroundLeft = 2096 * exportScale;
+        }
+        const backgroundTop = row * scaledPostH;
 
-      // Create the 1080×1350 background
-      const background = await sharp(muralBuffer)
-        .extract({
-          left: backgroundLeft,
-          top: backgroundTop,
-          width: scaledPostW,
-          height: scaledPostH,
-        })
-        .toBuffer();
+        // Step 2: Create the 1015×1350 slice (centered on the tile)
+        // The slice should be positioned relative to the background, not the tile
+        const sliceLeft = backgroundLeft + scaledLeftPad;
+        const sliceTop = backgroundTop;
 
-      // Create the 1015×1350 slice
-      const slice = await sharp(muralBuffer)
-        .extract({
-          left: sliceLeft,
-          top: sliceTop,
-          width: scaledGridW,
-          height: scaledGridH,
-        })
-        .toBuffer();
-
-      // Step 3: Place the 1015×1350 slice centered on the 1080×1350 background
-      // The slice is centered with 32px left padding
-      let finalImage: Buffer;
-
-      if (originalFormat === "png") {
-        // Use PNG for lossless compression
-        finalImage = await sharp(background)
-          .composite([
-            {
-              input: slice,
-              left: scaledLeftPad,
-              top: 0,
-            },
-          ])
-          .png({ compressionLevel: 0, quality: 100 })
+        // Create the 1080×1350 background
+        const background = await sharp(muralBuffer)
+          .extract({
+            left: backgroundLeft,
+            top: backgroundTop,
+            width: scaledPostW,
+            height: scaledPostH,
+          })
           .toBuffer();
-      } else {
-        // Use JPEG with maximum quality for other formats
-        finalImage = await sharp(background)
-          .composite([
-            {
-              input: slice,
-              left: scaledLeftPad,
-              top: 0,
-            },
-          ])
-          .jpeg({ quality: 100, mozjpeg: true })
+
+        // Create the 1015×1350 slice
+        const slice = await sharp(muralBuffer)
+          .extract({
+            left: sliceLeft,
+            top: sliceTop,
+            width: scaledGridW,
+            height: scaledGridH,
+          })
           .toBuffer();
+
+        // Step 3: Place the 1015×1350 slice centered on the 1080×1350 background
+        // The slice is centered with 32px left padding
+        let finalImage: Buffer;
+
+        if (originalFormat === "png") {
+          // Use PNG for lossless compression
+          finalImage = await sharp(background)
+            .composite([
+              {
+                input: slice,
+                left: scaledLeftPad,
+                top: 0,
+              },
+            ])
+            .png({ compressionLevel: 0, quality: 100 })
+            .toBuffer();
+        } else {
+          // Use JPEG with maximum quality for other formats
+          finalImage = await sharp(background)
+            .composite([
+              {
+                input: slice,
+                left: scaledLeftPad,
+                top: 0,
+              },
+            ])
+            .jpeg({ quality: 100, mozjpeg: true })
+            .toBuffer();
+        }
+
+        results.push({
+          buffer: finalImage,
+          order,
+          row,
+          col,
+          format: originalFormat || "jpeg",
+        });
+
+        order++;
       }
+    }
+  } else {
+    // Modern 3:4 mode – simple, fully seamless tiles
+    const basePostW = POST_W;
+    const basePostH = POST_H;
 
-      results.push({
-        buffer: finalImage,
-        order,
-        row,
-        col,
-        format: originalFormat || "jpeg",
-      });
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < columns; col++) {
+        const left = col * basePostW;
+        const top = row * basePostH;
 
-      order++;
+        // Extract the base 3:4 tile from the normalized mural
+        let tile = await sharp(muralBuffer)
+          .extract({
+            left,
+            top,
+            width: basePostW,
+            height: basePostH,
+          })
+          .toBuffer();
+
+        // Optional high-res export via upscaling
+        const targetW = Math.round(basePostW * exportScale);
+        const targetH = Math.round(basePostH * exportScale);
+
+        if (exportScale !== 1) {
+          tile = await sharp(tile)
+            .resize(targetW, targetH, { fit: "fill" })
+            .toBuffer();
+        }
+
+        // Encode using the original format when possible
+        let finalImage: Buffer;
+        if (originalFormat === "png") {
+          finalImage = await sharp(tile)
+            .png({ compressionLevel: 0, quality: 100 })
+            .toBuffer();
+        } else {
+          finalImage = await sharp(tile)
+            .jpeg({ quality: 100, mozjpeg: true })
+            .toBuffer();
+        }
+
+        results.push({
+          buffer: finalImage,
+          order,
+          row,
+          col,
+          format: originalFormat || "jpeg",
+        });
+
+        order++;
+      }
     }
   }
 

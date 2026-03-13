@@ -28,7 +28,7 @@ export default function DownloadButton({
               <p className="text-sm text-gray-500">
                 Format: Original (PNG/JPEG)
               </p>
-              <p className="text-sm text-gray-500">Size: 1080×1350px</p>
+              <p className="text-sm text-gray-500">Size: 1080×1440px (3:4)</p>
             </div>
           </div>
         </div>

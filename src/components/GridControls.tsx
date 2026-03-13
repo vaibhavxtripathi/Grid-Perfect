@@ -7,8 +7,10 @@ interface GridControlsProps {
   columns: number;
   rows: number;
   exportScale: number;
+  mode: "modern-3x4" | "legacy-4x5";
   onColumnsChange: (columns: number) => void;
   onRowsChange: (rows: number) => void;
+  onModeChange: (mode: "modern-3x4" | "legacy-4x5") => void;
   onProcess: () => void;
   isProcessing: boolean;
 }
@@ -18,8 +20,10 @@ export default function GridControls({
   columns,
   rows,
   exportScale,
+  mode,
   onColumnsChange,
   onRowsChange,
+  onModeChange,
   onProcess,
   isProcessing,
 }: GridControlsProps) {
@@ -81,9 +85,47 @@ export default function GridControls({
         <div className="bg-gray-50 rounded-lg p-4">
           <h3 className="font-medium text-black mb-2">Export Settings</h3>
           <p className="text-sm text-gray-600">
-            Images will be exported at original quality (1080×1350) preserving
-            the original format (PNG/JPEG) with maximum quality settings.
+            Images will be exported at original quality preserving the original
+            format (PNG/JPEG) with maximum quality settings.
           </p>
+          <p className="mt-2 text-xs text-gray-500">
+            Modern mode uses 3:4 posts (1080×1440) to match Instagram&apos;s new
+            grid. Legacy mode recreates the original 4:5 smart slicing with a
+            1015×1350 safe area inside each 1080×1350 post.
+          </p>
+        </div>
+
+        {/* Mode Selector */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="font-medium text-black mb-2">Instagram Mode</h3>
+          <div className="space-y-2 text-sm">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="mode"
+                value="modern-3x4"
+                checked={mode === "modern-3x4"}
+                onChange={() => onModeChange("modern-3x4")}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-gray-700">
+                Modern 3:4 (1080×1440) – recommended for 2025+ grid
+              </span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="mode"
+                value="legacy-4x5"
+                checked={mode === "legacy-4x5"}
+                onChange={() => onModeChange("legacy-4x5")}
+                className="text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-gray-700">
+                Legacy 4:5 smart slicing (1080×1350 posts, 1015×1350 grid)
+              </span>
+            </label>
+          </div>
         </div>
 
         {/* Algorithm Info */}
@@ -92,9 +134,10 @@ export default function GridControls({
             Smart Grid Algorithm
           </h3>
           <p className="text-sm text-blue-700">
-            This tool uses precise Instagram grid constants to ensure your mural
-            looks seamless both in the profile grid (1015×1350) and as
-            individual posts (1080×1350).
+            This tool keeps your murals seamless both in the profile grid and
+            when each individual post is opened. Use Modern for the new 3:4
+            grid, or Legacy to match the original 4:5 smart behavior with no
+            unexpected crops or borders in either view.
           </p>
         </div>
 

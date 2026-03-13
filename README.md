@@ -4,36 +4,32 @@ A minimal but polished web app that automatically slices large mural images into
 
 ## Problem Solved
 
-Instagram has an inconsistency between individual posts and the profile grid:
+Instagram now uses a vertical-first 3:4 layout in the profile grid, and also supports 3:4 feed posts (for example 1080×1440 px). To build seamless murals that still align perfectly in this new grid, you need to slice your large artwork into tiles that exactly match this 3:4 ratio.
 
-- **Individual posts**: 1080×1350 px
-- **Profile grid**: ~1015×1350 px (shrinks by 65px width)
-
-This mismatch breaks seamless murals when viewed in the profile grid.
+If you upload mismatched sizes (like older 4:5-only exports), Instagram may letterbox or crop in ways that break your mural alignment.
 
 ## Solution
 
-This app uses a precise algorithm with Instagram's exact constants to ensure perfect alignment:
+This app slices your mural into perfectly aligned 3:4 tiles that match the updated Instagram grid:
 
 ### Constants
 
 - `POST_W = 1080` (individual post width)
-- `POST_H = 1350` (individual post height)
-- `GRID_W = 1015` (grid display width)
-- `GRID_H = 1350` (grid display height)
-- `LEFT_PAD = 32` (left padding for centering)
-- `RIGHT_PAD = 33` (right padding for centering)
+- `POST_H = 1440` (individual post height, 3:4)
+- `GRID_W = 1080` (profile grid display width, 3:4)
+- `GRID_H = 1440` (profile grid display height, 3:4)
 
 ### Algorithm
 
-1. Create 1015×1350 slice (centered on each tile)
-2. Create 1080×1350 background from specific mural regions:
-   - First post: slice from 64px to 1144px
-   - Second post: slice from 1080px to 2160px
-   - Third post: slice from 2096px to 3176px
-3. Place the 1015×1350 slice centered on the 1080×1350 background
-4. Export as 1080×1350 JPEG files
-5. Output in left→right, top→bottom posting order
+1. Normalize the mural to `POST_W * columns` by `POST_H * rows` (3:4 tiles).
+2. Slice the mural into equal 1080×1440 rectangles in left→right, top→bottom order.
+3. Optionally upscale each tile for higher-resolution exports.
+4. Export each slice as a high‑quality JPEG or PNG.
+
+There is also an optional **Legacy 4:5 smart mode** which uses the original algorithm:
+
+- 1080×1350 posts with a 1015×1350 &quot;safe width&quot; for the profile grid.
+- A 1015×1350 slice is centered on a 1080×1350 background taken from precise mural regions, so your mural is seamless both in the grid and when each post is opened, just like the original version of this app.
 
 ## Features
 
@@ -100,30 +96,18 @@ src/
 
 ## Algorithm Details
 
-The core algorithm ensures perfect Instagram grid consistency:
+The core algorithm for the new 3:4 grid is intentionally simple and robust:
 
 ```typescript
-// For each tile (row, col):
-// Create the 1080×1350 background from specific mural regions
-let backgroundLeft;
-if (col === 0) {
-  backgroundLeft = 64; // First post: 64px to 1144px
-} else if (col === 1) {
-  backgroundLeft = 1080; // Second post: 1080px to 2160px
-} else {
-  backgroundLeft = 2096; // Third post: 2096px to 3176px
-}
-const background = extract(mural, backgroundLeft, row * POST_H, POST_W, POST_H);
+// For each tile (row, col) on a normalized mural:
+const left = col * POST_W;   // 1080
+const top = row * POST_H;    // 1440
 
-// Create the 1015×1350 slice (centered on the tile)
-const sliceLeft = col * POST_W + LEFT_PAD;
-const slice = extract(mural, sliceLeft, row * POST_H, GRID_W, GRID_H);
-
-// Place slice on background (32px left offset)
-const final = composite(background, slice, LEFT_PAD, 0);
+// Extract a 3:4 tile directly
+const tile = extract(mural, left, top, POST_W, POST_H);
 ```
 
-This ensures that when Instagram shrinks the 1080×1350 post to 1015×1350 in the grid, it shows exactly the right portion of your mural.
+Because both the profile grid and the feed now share the same 3:4 ratio, each exported slice appears exactly the same in the grid as it does in the feed post — no extra padding or hidden “safe width” is required.
 
 ## License
 

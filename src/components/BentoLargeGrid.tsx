@@ -30,7 +30,7 @@ export default function BentoLargeGrid() {
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="aspect-[4/5] bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 font-medium text-sm hover:bg-gray-200 hover:scale-105 transition-all duration-200 cursor-pointer"
+            className="aspect-[3/4] bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 font-medium text-sm hover:bg-gray-200 hover:scale-105 transition-all duration-200 cursor-pointer"
           >
             {i}
           </div>

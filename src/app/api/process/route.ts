@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { normalizeMural, sliceMural, generateThumbnails } from "@/lib/slicer";
+import {
+  normalizeMural,
+  sliceMural,
+  generateThumbnails,
+  type SliceMode,
+} from "@/lib/slicer";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +18,7 @@ export async function POST(request: NextRequest) {
     let columns: number;
     let rows: number;
     let exportScale: number = 1;
+    let mode: SliceMode = "modern-3x4";
 
     if (contentType.includes("application/json")) {
       const body = await request.json();
@@ -20,6 +26,9 @@ export async function POST(request: NextRequest) {
       columns = parseInt(String(body.columns));
       rows = parseInt(String(body.rows));
       exportScale = parseInt(String(body.exportScale || 1)) || 1;
+      if (body.mode === "legacy-4x5") {
+        mode = "legacy-4x5";
+      }
     } else {
       const formData = await request.formData();
       file = formData.get("file") as File;
@@ -27,6 +36,10 @@ export async function POST(request: NextRequest) {
       columns = parseInt(formData.get("columns") as string);
       rows = parseInt(formData.get("rows") as string);
       exportScale = parseInt(formData.get("exportScale") as string) || 1;
+      const modeRaw = (formData.get("mode") as string) || "";
+      if (modeRaw === "legacy-4x5") {
+        mode = "legacy-4x5";
+      }
     }
 
     if (!file && !imageUrl) {
@@ -53,11 +66,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Normalize the mural to exact size needed
-    const normalizedBuffer = await normalizeMural(buffer, columns, rows);
+    const normalizedBuffer = await normalizeMural(
+      buffer,
+      columns,
+      rows,
+      mode
+    );
 
     // Slice the mural into individual posts
     const slices = await sliceMural(normalizedBuffer, columns, rows, {
       exportScale,
+      mode,
     });
 
     // Generate thumbnails for preview
@@ -83,6 +102,7 @@ export async function POST(request: NextRequest) {
         columns,
         rows,
         exportScale,
+        mode,
       },
     });
   } catch (error: any) {

@@ -135,7 +135,7 @@ export default function PreviewGrid({
               <img
                 src={thumbnail.thumbnail}
                 alt={`Post ${thumbnail.order}`}
-                className="w-full aspect-[4/5] object-cover"
+                className="w-full aspect-[3/4] object-cover"
               />
 
               {/* Posting Order Overlay */}

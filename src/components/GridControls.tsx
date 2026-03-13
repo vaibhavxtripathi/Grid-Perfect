@@ -109,7 +109,7 @@ export default function GridControls({
                 className="text-blue-600 focus:ring-blue-500"
               />
               <span className="text-gray-700">
-                Modern 3:4 (1080×1440) – recommended for 2025+ grid
+                Modern 3:4 (1080×1440) – recommended for 2026+ grid
               </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">

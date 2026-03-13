@@ -191,10 +191,10 @@ export default function AppPage() {
                   columns={columns}
                   rows={rows}
                   exportScale={exportScale}
-                mode={mode}
+                  mode={mode}
                   onColumnsChange={setColumns}
                   onRowsChange={setRows}
-                onModeChange={setMode}
+                  onModeChange={setMode}
                   onProcess={handleProcess}
                   isProcessing={isProcessing}
                 />
